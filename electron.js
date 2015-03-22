@@ -1,9 +1,45 @@
+/* Prints out sidebar with all elements */
+var elements = parseElements();
+var output = "";
+
+for (var element in elements) {
+	output += '<div class = "list-group-item" id="' + element + '"><p class="list-group-item-heading" id="' + element + '">' + element + '</p></div>';
+}
+
+document.getElementById("elements-menu").innerHTML = output;
+
+
+/* Prints the element clicked on*/
+$( document ).ready(function() {
+	$( ".list-group-item" ).click(function( event ) {
+		printElement(event.target.id);
+	});
+});
+
+/* Turns entered value into formated element */
+function inputElement() {
+	var inStr = (document.getElementById('element').value).trim();
+	inStr = inStr.toLowerCase();
+	inStr = inStr.charAt(0).toUpperCase() + inStr.slice(1);
+
+	if (inStr in elements) {
+		printElement(inStr);
+		return;
+	}
+
+	// Find based on symbol
+	for (var element in elements) {
+		if (inStr === elements[element].symbol) {
+			printElement(element);
+			return;
+		}
+	}
+
+	alert("Element not found");
+}
+
 /* Prints the info of the element to html */
-function printElement() {
-	var elements = parseElements();
-
-	var element = document.getElementById('element').value;
-
+function printElement(element) {
 	var output = 	element + "(" + elements[element].symbol + ") <br>" + 
 					"Atomic number: " + elements[element].atomic_number + "<br>" +
 					"Atomic weight: " + elements[element].atomic_weight + "u <br>" +
