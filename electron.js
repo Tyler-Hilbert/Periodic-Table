@@ -35,7 +35,15 @@ function inputElement() {
 		}
 	}
 
-	alert("Element not found");
+	// Element not found
+	var error = '<div class="container" id="error-message">' +
+					'<div class="alert alert-danger alert-dismissable">' +
+						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'Element "' + (document.getElementById('element').value).trim() + '" not found' +
+					'</div>' +
+				'</div>';
+
+	document.getElementById('alert').innerHTML = error;
 }
 
 /* Prints the info of the element to html */
@@ -48,6 +56,9 @@ function printElement(element) {
 					"Electron configutarion: " + elements[element].electronic_configuration;
 	document.getElementById('config').innerHTML = output;
 
+	// Delete past error message
+	var error = document.getElementById('error-message');
+    error.parentNode.removeChild(error);
 }
 
 /* Returns an object with all elements in it */
