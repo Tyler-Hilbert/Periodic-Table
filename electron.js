@@ -9,9 +9,16 @@ for (var element in elements) {
 document.getElementById("elements-menu").innerHTML = output;
 
 
-/* Prints the element clicked on*/
-$( document ).ready(function() {
+// Add event listeners
+$(document).ready(function() {
+	/* Prints the element clicked on*/
 	$( ".list-group-item" ).click(function( event ) {
+		printElement(event.target.id);
+	});
+
+	/*Correct element when did you mean in the alert div was pressed*/
+	jQuery(document).on('click', '.corrected-word', function( event ) {
+		event.preventDefault();
 		printElement(event.target.id);
 	});
 });
@@ -20,18 +27,24 @@ $( document ).ready(function() {
 function inputElement() {
 	element = getElement(document.getElementById('element').value);
 
+	// If element is found print it other wise output error and suggest an element
 	if (typeof element !== 'undefined') {
 		printElement(element);
 	} else {
+		var correctedElement = getCorrectedElement(element);
+
 		var error = '<div class="container" id="error-message">' +
 						'<div class="alert alert-danger alert-dismissable">' +
 							'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-							'Element "' + (document.getElementById('element').value).trim() + '" not found' +
-						'</div>' +
-					'</div>';
+							'Element "' + (document.getElementById('element').value).trim() + '" not found'
+
+		if (typeof correctedElement !== 'undefined') {
+			error += ', did you mean <a class="corrected-word" id="' + correctedElement + '">' + correctedElement + '?</a>';
+		}
+							
+		error += '</div></div>';
 
 		document.getElementById('alert').innerHTML = error;
-		spellCorrect();
 	}
 }
 
@@ -84,8 +97,8 @@ function printElement(element) {
    	}
 }
 
-/* Prints a suggested word */
-function spellCorrect() {
+/* impliments a spell checking algorithm to return a suggested element */
+function getCorrectedElement() {
 	var inStr = document.getElementById('element').value.trim();
 
 	// Check if input has an extra char
@@ -93,7 +106,7 @@ function spellCorrect() {
 		var testElement = inStr.slice(0, i) + inStr.slice(i+1);
 		var element = getElement(testElement);
 		if (typeof element !== 'undefined') {
-			console.log(element);
+			return element;
 		}
 	}
 
@@ -106,7 +119,7 @@ function spellCorrect() {
 			var testElement = inStr.slice(0, i+1) + testChar + inStr.slice(i+1);
 			var element = getElement(testElement);
 			if (typeof element !== 'undefined') {
-				console.log(element);
+				return element;
 			}
 		}
 	}
@@ -117,9 +130,11 @@ function spellCorrect() {
 		var testElement = inStr.slice(0, i) + inStr.slice(i+1, i+2) + inStr.slice(i, i+1) +inStr.slice(i+2); // Swaps i and i + 1
 		var element = getElement(testElement);
 		if (typeof element !== 'undefined') {
-			console.log(element);
+			return element;
 		}
 	}
+
+	return;
 }
 
 /* Returns an object with all elements in it */
