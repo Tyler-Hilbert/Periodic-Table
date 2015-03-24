@@ -101,6 +101,16 @@ function printElement(element) {
 function getCorrectedElement() {
 	var inStr = document.getElementById('element').value.trim();
 
+	// Check if 2 of the characters were typed in the wrong order
+	for (var i = 0; i < inStr.length - 1; i++) {
+		var testElement = inStr.slice(0, i) + inStr.slice(i+1, i+2) + inStr.slice(i, i+1) +inStr.slice(i+2); // Swaps i and i + 1
+		var element = getElement(testElement);
+		if (typeof element !== 'undefined') {
+			return element;
+		}
+	}
+
+
 	// Check if input has an extra char
 	for (var i = inStr.length; i >= 0; i--) {
 		var testElement = inStr.slice(0, i) + inStr.slice(i+1);
@@ -111,26 +121,26 @@ function getCorrectedElement() {
 	}
 
 
-	// Check for missing char in input
+	// Check for missing char in input or mistyped key
 	for (var c = 65; c <= 90; c++) {
 		var testChar = String.fromCharCode(c);
 
 		for (var i = 0; i <= inStr.length; i++) {
+			// Checks for a missed character by adding character into index
 			var testElement = inStr.slice(0, i+1) + testChar + inStr.slice(i+1);
+			console.log(testElement);
 			var element = getElement(testElement);
 			if (typeof element !== 'undefined') {
 				return element;
 			}
-		}
-	}
 
-
-	// Check for swapped characters in inStr
-	for (var i = 0; i < inStr.length - 1; i++) {
-		var testElement = inStr.slice(0, i) + inStr.slice(i+1, i+2) + inStr.slice(i, i+1) +inStr.slice(i+2); // Swaps i and i + 1
-		var element = getElement(testElement);
-		if (typeof element !== 'undefined') {
-			return element;
+			// Checks for a mistyped character by replacing index
+			testElement = inStr.slice(0, i) + testChar + inStr.slice(i+1);
+			console.log(testElement);
+			element = getElement(testElement);
+			if (typeof element !== 'undefined') {
+				return element;
+			}
 		}
 	}
 
