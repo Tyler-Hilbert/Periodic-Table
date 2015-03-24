@@ -18,32 +18,47 @@ $( document ).ready(function() {
 
 /* Turns entered value into formated element */
 function inputElement() {
-	var inStr = (document.getElementById('element').value).trim();
-	inStr = inStr.toLowerCase();
+	element = getElement(document.getElementById('element').value);
+
+	if (typeof element !== 'undefined') {
+		printElement(element);
+	} else {
+		var error = '<div class="container" id="error-message">' +
+						'<div class="alert alert-danger alert-dismissable">' +
+							'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+							'Element "' + (document.getElementById('element').value).trim() + '" not found' +
+						'</div>' +
+					'</div>';
+
+		document.getElementById('alert').innerHTML = error;
+		spellCorrect();
+	}
+}
+
+/* Returns the element name or nothing if it doesn't exist */
+function getElement(inStr) {
+	inStr = inStr.toLowerCase().trim();
 	inStr = inStr.charAt(0).toUpperCase() + inStr.slice(1);
 
 	if (inStr in elements) {
-		printElement(inStr);
-		return;
+		return inStr;
 	}
 
 	// Find based on symbol
 	for (var element in elements) {
 		if (inStr === elements[element].symbol) {
-			printElement(element);
-			return;
+			return element;
 		}
 	}
 
-	// Element not found
-	var error = '<div class="container" id="error-message">' +
-					'<div class="alert alert-danger alert-dismissable">' +
-						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-						'Element "' + (document.getElementById('element').value).trim() + '" not found' +
-					'</div>' +
-				'</div>';
+	// Find based on atomic number
+	for (var element in elements) {
+		if (inStr === elements[element].atomic_number.toString()) {
+			return element;
+		}
+	}
 
-	document.getElementById('alert').innerHTML = error;
+	return;
 }
 
 /* Prints the info of the element to html */
@@ -56,9 +71,55 @@ function printElement(element) {
 					"Electron configutarion: " + elements[element].electronic_configuration;
 	document.getElementById('config').innerHTML = output;
 
+	window.scrollTo(0, 0);
+
+	// Highlight active element and remove highlight from previous
+	$('div').removeClass('active');
+	$("#" + element).addClass('active');
+
 	// Delete past error message
 	var error = document.getElementById('error-message');
-    error.parentNode.removeChild(error);
+	if (error !== null) {
+   		error.parentNode.removeChild(error);
+   	}
+}
+
+/* Prints a suggested word */
+function spellCorrect() {
+	var inStr = document.getElementById('element').value.trim();
+
+	// Check if input has an extra char
+	for (var i = inStr.length; i >= 0; i--) {
+		var testElement = inStr.slice(0, i) + inStr.slice(i+1);
+		var element = getElement(testElement);
+		if (typeof element !== 'undefined') {
+			console.log(element);
+		}
+	}
+
+
+	// Check for missing char in input
+	for (var c = 65; c <= 90; c++) {
+		var testChar = String.fromCharCode(c);
+
+		for (var i = 0; i <= inStr.length; i++) {
+			var testElement = inStr.slice(0, i+1) + testChar + inStr.slice(i+1);
+			var element = getElement(testElement);
+			if (typeof element !== 'undefined') {
+				console.log(element);
+			}
+		}
+	}
+
+
+	// Check for swapped characters in inStr
+	for (var i = 0; i < inStr.length - 1; i++) {
+		var testElement = inStr.slice(0, i) + inStr.slice(i+1, i+2) + inStr.slice(i, i+1) +inStr.slice(i+2); // Swaps i and i + 1
+		var element = getElement(testElement);
+		if (typeof element !== 'undefined') {
+			console.log(element);
+		}
+	}
 }
 
 /* Returns an object with all elements in it */
