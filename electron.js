@@ -3,7 +3,7 @@ var elements = parseElements();
 var output = "";
 
 for (var element in elements) {
-	output += '<div class = "list-group-item" id="' + element + '"><p class="list-group-item-heading" id="' + element + '">' + element + '</p></div>';
+	output += '<div class = "list-group-item" element="' + element + '"><p class="list-group-item-heading" element="' + element + '">' + element + '</p></div>';
 }
 
 document.getElementById("elements-menu").innerHTML = output;
@@ -13,13 +13,13 @@ document.getElementById("elements-menu").innerHTML = output;
 $(document).ready(function() {
 	/* Prints the element clicked on*/
 	$( ".list-group-item" ).click(function( event ) {
-		printElement(event.target.id);
+		printElement(event.target.getAttribute("element"));
 	});
 
 	/*Correct element when did you mean in the alert div was pressed*/
 	jQuery(document).on('click', '.corrected-word', function( event ) {
 		event.preventDefault();
-		printElement(event.target.id);
+		printElement(event.target.getAttribute("element"));
 	});
 });
 
@@ -39,7 +39,7 @@ function inputElement() {
 							'Element "' + (document.getElementById('element').value).trim() + '" not found'
 
 		if (typeof correctedElement !== 'undefined') {
-			error += ', did you mean <a class="corrected-word" id="' + correctedElement + '">' + correctedElement + '?</a>';
+			error += ', did you mean <a class="corrected-word" element="' + correctedElement + '">' + correctedElement + '?</a>';
 		}
 							
 		error += '</div></div>';
@@ -88,7 +88,7 @@ function printElement(element) {
 
 	// Highlight active element and remove highlight from previous
 	$('div').removeClass('active');
-	$("#" + element).addClass('active');
+	$("div[element='" + element + "']").addClass('active');
 
 	// Delete past error message
 	var error = document.getElementById('error-message');
@@ -128,7 +128,6 @@ function getCorrectedElement() {
 		for (var i = 0; i <= inStr.length; i++) {
 			// Checks for a missed character by adding character into index
 			var testElement = inStr.slice(0, i+1) + testChar + inStr.slice(i+1);
-			console.log(testElement);
 			var element = getElement(testElement);
 			if (typeof element !== 'undefined') {
 				return element;
@@ -136,7 +135,6 @@ function getCorrectedElement() {
 
 			// Checks for a mistyped character by replacing index
 			testElement = inStr.slice(0, i) + testChar + inStr.slice(i+1);
-			console.log(testElement);
 			element = getElement(testElement);
 			if (typeof element !== 'undefined') {
 				return element;
